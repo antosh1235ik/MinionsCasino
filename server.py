@@ -102,7 +102,7 @@ def index():
             return send_file(f)
     return "<h1>Casino API Running</h1>"
 
-# ===== 1. НАСТОЯЩИЙ ИНВОЙС TELEGRAM STARS (ЧЕРЕЗ URLLIB) =====
+# ===== 1. ИНВОЙС STARS =====
 @app.route('/api/stars/create-invoice', methods=['POST'])
 def create_stars_invoice():
     data = request.json or {}
@@ -135,7 +135,6 @@ def create_stars_invoice():
     except Exception as e:
         return jsonify({"detail": str(e)}), 500
 
-# ВЕБХУК ДЛЯ НАЧИСЛЕНИЯ STARS
 @app.route('/api/telegram-webhook', methods=['POST'])
 def telegram_webhook():
     update = request.json or {}
@@ -171,7 +170,7 @@ def telegram_webhook():
                     conn.commit()
     return jsonify({"ok": True})
 
-# ===== 2. БЛОКЧЕЙН-ПРОВЕРКА TON (ЧЕРЕЗ URLLIB) =====
+# ===== 2. ПРОВЕРКА TON =====
 @app.route('/api/ton/verify-deposit', methods=['POST'])
 def verify_ton_deposit():
     data = request.json or {}
