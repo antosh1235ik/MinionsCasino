@@ -10,12 +10,8 @@ def index():
     try:
         return send_file('index.html')
     except:
-        return "✅ Сервер работает! Но файл index.html не найден"
-
-@app.route('/api/hello')
-def hello():
-    return {"status": "ok", "message": "Сервер работает!"}
+        return "<h1>🎰 Minions Casino</h1><p>✅ Сервер работает! Но файл index.html не найден</p>"
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port)
