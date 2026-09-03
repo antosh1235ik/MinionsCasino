@@ -26,9 +26,9 @@ def init_db():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
-                balance INTEGER DEFAULT 1000,
+                balance INTEGER DEFAULT 0,
                 ton_balance REAL DEFAULT 0.0,
-                free_spins INTEGER DEFAULT 5,
+                free_spins INTEGER DEFAULT 0,
                 referral_code TEXT,
                 referral_earnings INTEGER DEFAULT 0,
                 last_daily TEXT,
@@ -86,7 +86,7 @@ def ensure_user(cursor, user_id):
     user = cursor.fetchone()
     if not user:
         ref_code = f"REF{str(user_id)[-4:]}"
-        cursor.execute("INSERT INTO users (id, referral_code, balance) VALUES (?, ?, 1000)", (str(user_id), ref_code))
+        cursor.execute("INSERT INTO users (id, referral_code, balance) VALUES (?, ?, 0)", (str(user_id), ref_code))
         cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id),))
         user = cursor.fetchone()
     return user
@@ -100,7 +100,7 @@ def index():
             return send_file(f)
     return "<h1>Casino API Running</h1>"
 
-# ===== ДЕПОЗИТ С КОМИССИЕЙ 1% (STARS & TON) =====
+# ===== 1. НАСТОЯЩИЙ ИНВОЙС TELEGRAM STARS =====
 @app.route('/api/stars/create-invoice', methods=['POST'])
 def create_stars_invoice():
     data = request.json or {}
@@ -127,9 +127,11 @@ def create_stars_invoice():
     except Exception as e:
         return jsonify({"detail": str(e)}), 500
 
+# ВЕБХУК: ЕДИНСТВЕННЫЙ СПОСОБ ЗАЧИСЛЕНИЯ STARS
 @app.route('/api/telegram-webhook', methods=['POST'])
 def telegram_webhook():
     update = request.json or {}
+
     if "pre_checkout_query" in update:
         query_id = update["pre_checkout_query"]["id"]
         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/answerPreCheckoutQuery", json={
@@ -147,6 +149,7 @@ def telegram_webhook():
         if len(parts) >= 4:
             user_id = parts[2]
             net_stars = int(total_amount * 0.99)
+
             with get_db() as conn:
                 cursor = conn.cursor()
                 charge_id = payment.get("telegram_payment_charge_id")
@@ -158,6 +161,7 @@ def telegram_webhook():
                     conn.commit()
     return jsonify({"ok": True})
 
+# ===== 2. БЛОКЧЕЙН-ПРОВЕРКА TON (ЕДИНСТВЕННЫЙ СПОСОБ ЗАЧИСЛЕНИЯ TON) =====
 @app.route('/api/ton/verify-deposit', methods=['POST'])
 def verify_ton_deposit():
     data = request.json or {}
@@ -197,32 +201,7 @@ def verify_ton_deposit():
     except Exception as e:
         return jsonify({"detail": f"Ошибка связи с блокчейном: {str(e)}"}), 500
 
-@app.route('/api/balance/add', methods=['POST'])
-def add_balance():
-    data = request.get_json(silent=True) or {}
-    user_id = str(request.args.get('user_id') or data.get('user_id') or '')
-    amount = float(request.args.get('amount') or data.get('amount') or 0)
-    currency = str(request.args.get('currency') or data.get('currency') or 'stars').lower()
-
-    if not user_id or amount <= 0:
-        return jsonify({"detail": "Некорректная сумма"}), 400
-
-    net = amount * 0.99
-
-    with get_db() as conn:
-        cursor = conn.cursor()
-        ensure_user(cursor, user_id)
-        if currency == 'ton':
-            cursor.execute("UPDATE users SET ton_balance = ton_balance + ? WHERE id = ?", (net, user_id))
-        else:
-            net_int = int(net)
-            cursor.execute("UPDATE users SET balance = balance + ? WHERE id = ?", (net_int, user_id))
-        conn.commit()
-        cursor.execute("SELECT balance, ton_balance FROM users WHERE id = ?", (user_id,))
-        row = cursor.fetchone()
-        return jsonify({"status": "ok", "new_balance": row["balance"], "new_ton_balance": row["ton_balance"]})
-
-# ===== МАРКЕТ И ИНВЕНТАРЬ =====
+# ===== ПРОФИЛЬ, МАРКЕТ И ПОКУПКА =====
 @app.route('/api/users/<user_id>', methods=['GET'])
 def get_user(user_id):
     with get_db() as conn:
@@ -331,7 +310,7 @@ def transfer_nft():
         conn.commit()
         return jsonify({"status": "ok"})
 
-# ===== ИГРЫ КАЗИНО =====
+# ===== ИГРЫ КАЗИНО (ПРОВЕРКА БАЛАНСА НА СЕРВЕРЕ) =====
 @app.route('/api/games/slots/spin', methods=['POST'])
 def spin_slots():
     user_id = str(request.args.get('user_id'))
