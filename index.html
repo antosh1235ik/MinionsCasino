@@ -356,7 +356,7 @@
         .game-icon-card.hot { border-color: rgba(255, 255, 255, 0.45); }
         .game-icon-card.new { border-color: rgba(255, 255, 255, 0.3); }
 
-        /* ===== NFT / GIFTS CARDS ===== */
+        /* ===== NFT CARDS ===== */
         .nft-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -522,7 +522,6 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Свитчер пополнения Stars / TON */
         .currency-switch {
             display: flex;
             background: rgba(0,0,0,0.35);
@@ -962,7 +961,7 @@
             <div class="nft-grid" id="profileNftGrid"><div class="loading-shimmer">Считывание инвентаря...</div></div>
         </div>
 
-        <button class="btn btn-primary btn-block mt-6" onclick="openDeposit()" data-i18n="topup_balance">💳 Пополнить баланс</button>
+        <button class="btn btn-primary btn-block mt-6" onclick="openDeposit()" data-i18n="topup_balance">⭐ Пополнить баланс</button>
     </div>
 
 </div>
@@ -995,8 +994,6 @@
 </div>
 
 <script>
-    const TARGET_MARKET_SELLER = "8133727762";
-
     // ===== БАЗА ЯЗЫКОВ СО ВСЕГО МИРА =====
     const LANGUAGES = [
         { code: 'ru', name: 'Русский', flag: '🇷🇺' },
@@ -1004,7 +1001,27 @@
         { code: 'uk', name: 'Українська', flag: '🇺🇦' },
         { code: 'kz', name: 'Қазақша', flag: '🇰🇿' },
         { code: 'by', name: 'Беларуская', flag: '🇧🇾' },
-        { code: 'uz', name: 'Oʻzbekcha', flag: '🇺🇿' }
+        { code: 'uz', name: 'Oʻzbekcha', flag: '🇺🇿' },
+        { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+        { code: 'fr', name: 'Français', flag: '🇫🇷' },
+        { code: 'es', name: 'Español', flag: '🇪🇸' },
+        { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+        { code: 'pt', name: 'Português', flag: '🇵🇹' },
+        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+        { code: 'zh', name: '中文 (简体)', flag: '🇨🇳' },
+        { code: 'ja', name: '日本語', flag: '🇯🇵' },
+        { code: 'ko', name: '한국어', flag: '🇰🇷' },
+        { code: 'ar', name: 'العربية', flag: '🇦🇪' },
+        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+        { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+        { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+        { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+        { code: 'th', name: 'ไทย', flag: '🇹🇭' },
+        { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
+        { code: 'ge', name: 'ქართული', flag: '🇬🇪' },
+        { code: 'am', name: 'Հայերեն', flag: '🇦🇲' },
+        { code: 'az', name: 'Azərbaycan', flag: '🇦🇿' }
     ];
 
     const TRANSLATIONS = {
@@ -1018,7 +1035,7 @@
             referral_title: '👥 Программа лояльности', referral_sub: 'Приглашай друзей и забирай процент с каждой ставки!',
             invite_code: 'Инвайт-код:', friends_count: 'Друзей:', total_earned: 'Начислено:', copy_invite: '📋 Скопировать инвайт',
             enter_secret_code: 'Ввести секретный код', profile_title: '👤 Профиль аккаунта', loading_data: 'Загружаем данные...',
-            topup_balance: '💳 Пополнить баланс', settings_title: '⚙️ Настройки интерфейса',
+            topup_balance: '⭐ Пополнить баланс', settings_title: '⚙️ Настройки интерфейса',
             glass_transparency: 'Прозрачность панелей:', btn_transparency: 'Прозрачность кнопок (Стекло):',
             glass_blur: 'Сила размытия (Blur):', accent_color_label: 'Акцентный цвет интерфейса:',
             default_white_btn: '⚪ СТАНДАРТНЫЙ БЕЛЫЙ', language_select: 'Язык интерфейса:'
@@ -1033,7 +1050,7 @@
             referral_title: '👥 Referral Guild', referral_sub: 'Invite friends and earn rewards on every bet!',
             invite_code: 'Invite Code:', friends_count: 'Friends:', total_earned: 'Earned:', copy_invite: '📋 Copy Invite Code',
             enter_secret_code: 'Enter Secret Code', profile_title: '👤 Account Profile', loading_data: 'Loading profile...',
-            topup_balance: '💳 Top-up Balance', settings_title: '⚙️ Interface Settings',
+            topup_balance: '⭐ Top-up Balance', settings_title: '⚙️ Interface Settings',
             glass_transparency: 'Panels Transparency:', btn_transparency: 'Buttons Transparency (Glass):',
             glass_blur: 'Frosted Blur:', accent_color_label: 'Interface Accent Color:',
             default_white_btn: '⚪ DEFAULT WHITE', language_select: 'Interface Language:'
@@ -1071,9 +1088,15 @@
             const key = el.getAttribute('data-i18n');
             if (dict[key]) el.textContent = dict[key];
         });
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.placeholder = (code === 'ru' || code === 'uk' || code === 'by' || code === 'kz') 
+                ? '🔍 Найти предмет в маркете...' 
+                : '🔍 Search in market...';
+        }
     }
 
-    // ===== НАСТРОЙКИ =====
+    // ===== НАСТРОЙКИ (iOS BOTTOM SHEET) =====
     function openSettings() {
         const dict = TRANSLATIONS[currentLang] || TRANSLATIONS['en'] || TRANSLATIONS['ru'];
         const modal = document.getElementById('modalRoot');
@@ -1082,54 +1105,114 @@
                 <div class="modal-box">
                     <div class="modal-grabber"></div>
                     <div class="modal-title">${dict.settings_title || '⚙️ Настройки интерфейса'}</div>
-                    <div class="settings-label"><span>${dict.accent_color_label || 'Акцентный цвет интерфейса:'}</span></div>
+                    
+                    <div class="settings-label">
+                        <span>${dict.accent_color_label || 'Акцентный цвет интерфейса:'}</span>
+                    </div>
                     <div class="color-picker-box">
                         <input type="color" class="color-input-bubble" id="colorPicker" value="${accentColor}" oninput="updateAccentColor(this.value)" />
                         <button class="btn btn-frosted-white" style="flex:1; font-weight:800;" onclick="resetDefaultWhite()">
                             ${dict.default_white_btn || '⚪ СТАНДАРТНЫЙ БЕЛЫЙ'}
                         </button>
                     </div>
+
                     <div class="settings-label">
                         <span>${dict.btn_transparency || 'Прозрачность кнопок (Стекло):'}</span>
                         <span id="btnOpVal">${Math.round(btnGlassOpacity * 100)}%</span>
                     </div>
                     <input type="range" class="range-slider" min="0.0" max="1.0" step="0.05" value="${btnGlassOpacity}" oninput="updateBtnOpacity(this.value)" />
+
                     <div class="settings-label">
                         <span>${dict.glass_transparency || 'Прозрачность панелей:'}</span>
                         <span id="opVal">${Math.round((1 - glassOpacity) * 100)}%</span>
                     </div>
                     <input type="range" class="range-slider" min="0.0" max="1.0" step="0.05" value="${glassOpacity}" oninput="updateOpacity(this.value)" />
+
                     <div class="settings-label">
                         <span>${dict.glass_blur || 'Сила размытия (Blur):'}</span>
                         <span id="blurVal">${glassBlur}px</span>
                     </div>
                     <input type="range" class="range-slider" min="0" max="80" step="2" value="${glassBlur}" oninput="updateBlur(this.value)" />
+
+                    <div class="settings-label" style="margin-top: 10px;">
+                        <span>${dict.language_select || 'Язык интерфейса:'}</span>
+                        <span style="color:var(--accent-color); font-weight:800;">${LANGUAGES.find(l => l.code === currentLang)?.flag || '🌐'}</span>
+                    </div>
+                    <input class="input-dark" placeholder="🔍 Поиск языка..." oninput="filterLangList(this.value)" style="margin-bottom: 8px; padding: 10px 16px;" />
+                    <div class="lang-list" id="langListContainer">
+                        ${renderLangItems('')}
+                    </div>
+
                     <button class="btn btn-primary btn-block mt-6" onclick="closeModal()">Готово</button>
                 </div>
             </div>
         `;
     }
 
-    function updateAccentColor(val) { accentColor = val; localStorage.setItem('casino_accent_color', accentColor); applyCustomStyles(); }
-    function resetDefaultWhite() { updateAccentColor('#ffffff'); }
-    function updateBtnOpacity(val) { btnGlassOpacity = parseFloat(val); localStorage.setItem('casino_btn_glass_op', btnGlassOpacity); document.getElementById('btnOpVal').textContent = Math.round(btnGlassOpacity * 100) + '%'; applyCustomStyles(); }
-    function updateOpacity(val) { glassOpacity = parseFloat(val); localStorage.setItem('casino_glass_op', glassOpacity); document.getElementById('opVal').textContent = Math.round((1 - glassOpacity) * 100) + '%'; applyCustomStyles(); }
-    function updateBlur(val) { glassBlur = parseInt(val); localStorage.setItem('casino_glass_blur', glassBlur); document.getElementById('blurVal').textContent = glassBlur + 'px'; applyCustomStyles(); }
+    function updateAccentColor(val) {
+        accentColor = val;
+        localStorage.setItem('casino_accent_color', accentColor);
+        applyCustomStyles();
+    }
+
+    function resetDefaultWhite() {
+        updateAccentColor('#ffffff');
+        const picker = document.getElementById('colorPicker');
+        if (picker) picker.value = '#ffffff';
+    }
+
+    function renderLangItems(query) {
+        return LANGUAGES
+            .filter(l => l.name.toLowerCase().includes(query.toLowerCase()) || l.code.includes(query.toLowerCase()))
+            .map(l => `
+                <div class="lang-item ${l.code === currentLang ? 'selected' : ''}" onclick="selectLang('${l.code}')">
+                    <span>${l.flag} ${l.name}</span>
+                    ${l.code === currentLang ? '<span>✓</span>' : ''}
+                </div>
+            `).join('');
+    }
+
+    function filterLangList(q) {
+        document.getElementById('langListContainer').innerHTML = renderLangItems(q);
+    }
+
+    function selectLang(code) {
+        setLanguage(code);
+        closeModal();
+    }
+
+    function updateBtnOpacity(val) {
+        btnGlassOpacity = parseFloat(val);
+        localStorage.setItem('casino_btn_glass_op', btnGlassOpacity);
+        document.getElementById('btnOpVal').textContent = Math.round(btnGlassOpacity * 100) + '%';
+        applyCustomStyles();
+    }
+
+    function updateOpacity(val) {
+        glassOpacity = parseFloat(val);
+        localStorage.setItem('casino_glass_op', glassOpacity);
+        document.getElementById('opVal').textContent = Math.round((1 - glassOpacity) * 100) + '%';
+        applyCustomStyles();
+    }
+
+    function updateBlur(val) {
+        glassBlur = parseInt(val);
+        localStorage.setItem('casino_glass_blur', glassBlur);
+        document.getElementById('blurVal').textContent = glassBlur + 'px';
+        applyCustomStyles();
+    }
 
     // ============================================================
+    const TARGET_MARKET_SELLER = "8133727762";
     const API_URL = window.location.origin;
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.expand(); tg.ready(); }
 
-    let myId = localStorage.getItem('casino_myid');
-    if (!myId) {
-        myId = 'user_' + Math.floor(100000 + Math.random() * 900000);
-        localStorage.setItem('casino_myid', myId);
-    }
+    let myId = 'user_' + Math.floor(100000 + Math.random() * 900000);
     let myName = 'User';
     try {
         const u = tg?.initDataUnsafe?.user;
-        if (u && u.id) {
+        if (u) {
             myId = String(u.id);
             myName = u.first_name || u.username || 'User';
         }
@@ -1166,6 +1249,13 @@
                 document.getElementById('refCode').textContent = user.referral_code || '—';
                 document.getElementById('refCount').textContent = user.referrals ? user.referrals.length : 0;
                 document.getElementById('refEarnings').textContent = (user.referral_earnings || 0) + ' ⭐';
+
+                const today = new Date().toISOString().split('T')[0];
+                if (user.last_daily !== today) {
+                    document.getElementById('dailyBonusText').textContent = '🎁 Награда готова!';
+                } else {
+                    document.getElementById('dailyBonusText').textContent = '✅ Получено на сегодня';
+                }
             }
 
             await loadMarket(silent);
@@ -1180,21 +1270,20 @@
     // ===== MARKET (ТОЛЬКО ПОДАРКИ / NFT ПОЛЬЗОВАТЕЛЯ 8133727762) =====
     async function loadMarket(silent = false) {
         const grid = document.getElementById('marketGrid');
-        if (!silent && !grid.children.length) grid.innerHTML = '<div class="loading-shimmer">Синхронизация...</div>';
+        if (!silent && !grid.children.length) grid.innerHTML = '<div class="loading-shimmer" data-i18n="loading_market">Подключение к маркетплейсу...</div>';
         try {
             const market = await api('/api/market');
-            // Оставляем только подарки пользователя 8133727762
             allNFTs = (market || []).filter(n => String(n.owner_id || n.seller_id) === TARGET_MARKET_SELLER);
             renderMarket(allNFTs);
         } catch (e) {
-            if (!silent) grid.innerHTML = '<div class="loading-shimmer">Маркет пуст</div>';
+            if (!silent) grid.innerHTML = '<div class="loading-shimmer">Не удалось загрузить лоты</div>';
         }
     }
 
     function renderMarket(nfts) {
         const grid = document.getElementById('marketGrid');
         if (!nfts || nfts.length === 0) {
-            grid.innerHTML = `<div class="loading-shimmer" style="grid-column: span 2;">Нет активных подарков продавца #${TARGET_MARKET_SELLER}</div>`;
+            grid.innerHTML = `<div class="loading-shimmer" style="grid-column:span 2;">Нет лотов продавца #${TARGET_MARKET_SELLER}</div>`;
             return;
         }
         grid.innerHTML = nfts.map(n => `
@@ -1222,24 +1311,23 @@
         renderMarket(filtered);
     }
 
-    // Настоящая покупка: Stars списываются, подарок уходит продавцу 8133727762, а NFT падает к вам
     async function buyNFT(nftId) {
         try {
             const result = await api(`/api/nfts/buy?user_id=${myId}&nft_id=${nftId}`, 'POST');
             myBalance = result.new_balance;
             document.getElementById('balanceDisplay').textContent = myBalance.toLocaleString();
-            alert('🎉 Подарок куплен и добавлен в ваш инвентарь!');
+            alert('🎉 Предмет добавлен в коллекцию!');
             await loadAll();
         } catch (e) {
             alert('❌ ' + e.message);
         }
     }
 
-    // ===== MY NFTS (ОТОБРАЖАЮТСЯ И В NFT, И В ПРОФИЛЕ) =====
+    // ===== MY NFTS (В ИНВЕНТАРЕ И В ПРОФИЛЕ) =====
     async function loadMyNFTs(silent = false) {
         const grid = document.getElementById('myNftGrid');
         const profileGrid = document.getElementById('profileNftGrid');
-        if (!silent && !grid.children.length) grid.innerHTML = '<div class="loading-shimmer">Считывание предметов...</div>';
+        if (!silent && !grid.children.length) grid.innerHTML = '<div class="loading-shimmer" data-i18n="loading_inventory">Считывание инвентаря...</div>';
         try {
             const nfts = await api(`/api/nfts/${myId}`);
             myNFTs = nfts || [];
@@ -1247,7 +1335,7 @@
             renderMyNFTs(myNFTs, profileGrid, false);
         } catch (e) {
             if (!silent) {
-                grid.innerHTML = '<div class="loading-shimmer">Инвентарь пуст</div>';
+                grid.innerHTML = '<div class="loading-shimmer">Ошибка инвентаря</div>';
                 if (profileGrid) profileGrid.innerHTML = '<div class="loading-shimmer">Инвентарь пуст</div>';
             }
         }
@@ -1256,7 +1344,7 @@
     function renderMyNFTs(nfts, targetGrid, showActions = true) {
         if (!targetGrid) return;
         if (!nfts || nfts.length === 0) {
-            targetGrid.innerHTML = '<div class="loading-shimmer" style="grid-column: span 2;">Инвентарь пуст</div>';
+            targetGrid.innerHTML = '<div class="loading-shimmer" style="grid-column:span 2;">Инвентарь пуст</div>';
             return;
         }
         targetGrid.innerHTML = nfts.map(n => `
@@ -1349,6 +1437,18 @@
                         <span class="text-dim">Ранг профиля</span>
                         <span style="font-weight:800; color:var(--accent-color);">Уровень ${stats.level || 1}</span>
                     </div>
+                    <div class="flex-between" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <span class="text-dim">Опыт</span>
+                        <span style="font-weight:700;">${stats.xp || 0} XP</span>
+                    </div>
+                    <div class="flex-between" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <span class="text-dim">Оборот ставок</span>
+                        <span style="font-weight:700;">${stats.total_wagered || 0} ⭐</span>
+                    </div>
+                    <div class="flex-between" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <span class="text-dim">Всего выигрышей</span>
+                        <span style="font-weight:800; color:#30d158;">${stats.total_won || 0} ⭐</span>
+                    </div>
                     <div class="flex-between" style="padding:10px 0;">
                         <span class="text-dim">Фриспины</span>
                         <span style="font-weight:800; color:var(--accent-color);">${stats.free_spins || myFreeSpins}</span>
@@ -1413,7 +1513,7 @@
             alert(`🎁 Получено: +${result.bonus} ⭐ и +${result.free_spins} спинов!`);
             await loadAll();
         } catch (e) {
-            alert('Бонус уже получен за последние 24ч!');
+            alert(e.message.includes('сегодня') ? 'Бонус уже получен за последние 24ч!' : 'Ошибка: ' + e.message);
         }
     }
 
@@ -1441,7 +1541,7 @@
 
                     <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-card); margin-bottom:16px; border:1px solid var(--ios-glass-border);">
                         <div class="flex-between">
-                            <span class="text-dim">Вы платите:</span>
+                            <span class="text-dim">Вы вносите:</span>
                             <span style="font-weight:700;" id="calcPay">100 ⭐</span>
                         </div>
                         <div class="flex-between mt-6">
@@ -1496,13 +1596,54 @@
     async function processDeposit() {
         const rawAmount = parseFloat(document.getElementById('depAmountInput')?.value);
         if (isNaN(rawAmount) || rawAmount <= 0) { alert('Введите корректную сумму'); return; }
-        try {
-            await api(`/api/balance/add?user_id=${myId}&amount=${rawAmount}&currency=${currentDepositType}`, 'POST');
-            alert('✅ Депозит успешно зачислен за вычетом 1% комиссии!');
+
+        if (currentDepositType === 'stars') {
+            try {
+                const res = await api('/api/stars/create-invoice', 'POST', { user_id: myId, amount: Math.floor(rawAmount) });
+                if (tg && tg.openInvoice) {
+                    tg.openInvoice(res.invoice_link, (status) => {
+                        if (status === 'paid') {
+                            alert('✅ Оплата Stars прошла успешно!');
+                            setTimeout(loadAll, 2000);
+                        }
+                    });
+                } else {
+                    window.open(res.invoice_link, '_blank');
+                }
+                closeModal();
+            } catch (e) {
+                // Если бот офлайн — пополняем через локальный API
+                api(`/api/balance/add?user_id=${myId}&amount=${rawAmount}&currency=stars`, 'POST')
+                    .then(() => { alert('✅ Баланс пополнен!'); closeModal(); loadAll(); })
+                    .catch(err => alert('Ошибка: ' + err.message));
+            }
+        } else {
+            const memo = `dep_${myId}_${Date.now()}`;
+            const payUrl = `ton://transfer/UQDfH8vUHmcSKI0c3qWxv7e2eH9ZB9Q8WW2SaqnjDaRjm1Lp?amount=${Math.floor(rawAmount * 1e9)}&text=${encodeURIComponent(memo)}`;
+            
+            if (confirm(`Для депозита ${rawAmount} TON отправьте транзакцию на адрес:\nUQDfH8vUHmcSKI0c3qWxv7e2eH9ZB9Q8WW2SaqnjDaRjm1Lp\nС комментарием: ${memo}\n\nОткрыть кошелек сейчас?`)) {
+                window.location.href = payUrl;
+            }
+
+            // Фоновый опрос транзакции
+            let checks = 0;
+            const interval = setInterval(async () => {
+                checks++;
+                try {
+                    const verified = await api('/api/ton/verify-deposit', 'POST', {
+                        user_id: myId,
+                        comment: memo,
+                        amount: rawAmount
+                    });
+                    clearInterval(interval);
+                    alert(`💎 TON зачислен (+${verified.credited} TON)!`);
+                    loadAll();
+                } catch(err) {
+                    if (checks > 10) clearInterval(interval);
+                }
+            }, 5000);
+
             closeModal();
-            await loadAll();
-        } catch (e) {
-            alert('❌ ' + e.message);
         }
     }
 
@@ -1542,8 +1683,10 @@
         const bet = parseInt(document.getElementById('slotBet').value) || 10;
         const resultEl = document.getElementById('slotResult');
         resultEl.textContent = 'Крутим барабаны...';
+
         try {
             const result = await api(`/api/games/slots/spin?user_id=${myId}&bet=${bet}`, 'POST');
+
             const symbols = result.reels;
             const reels = document.querySelectorAll('.slot-reel');
             for (let i = 0; i < 3; i++) {
@@ -1553,6 +1696,7 @@
                     cells[j].classList.remove('win');
                 }
             }
+
             if (result.win) {
                 resultEl.innerHTML = `<span style="color:#ffffff; text-shadow:0 0 10px #fff;">🎉 ВЫИГРЫШ: +${result.win_amount} ⭐</span>`;
                 document.querySelectorAll('.slot-symbol').forEach(el => {
@@ -1561,8 +1705,10 @@
             } else {
                 resultEl.innerHTML = `<span style="color:rgba(255,255,255,0.4);">Не повезло</span>`;
             }
+
             myBalance = result.new_balance;
             document.getElementById('balanceDisplay').textContent = myBalance.toLocaleString();
+
             if (result.free_spins > 0) {
                 myFreeSpins += result.free_spins;
                 document.getElementById('slotFreeSpins').textContent = myFreeSpins;
@@ -1609,11 +1755,14 @@
         const numEl = document.getElementById('rouletteNumber');
         const resultEl = document.getElementById('rouletteResult');
         resultEl.textContent = 'Шарик запущен...';
+
         try {
             const result = await api(`/api/games/roulette/spin?user_id=${myId}&bet=${bet}&bet_type=${betType}${exactNumber !== null ? `&number=${exactNumber}` : ''}`, 'POST');
+
             numEl.textContent = result.result;
             numEl.className = 'roulette-number ' + result.color;
             resultEl.innerHTML = result.win ? `<span style="color:#ffffff; font-weight:800; text-shadow:0 0 10px #fff;">🎉 +${result.win_amount} ⭐</span>` : '<span style="color:rgba(255,255,255,0.4);">Мимо</span>';
+
             myBalance = result.new_balance;
             document.getElementById('balanceDisplay').textContent = myBalance.toLocaleString();
             await loadAll();
@@ -1673,8 +1822,9 @@
         });
 
         if (page === 'nfts' || page === 'profile') loadMyNFTs();
-        if (page === 'market') loadMarket();
         if (page === 'profile') loadProfile();
+        if (page === 'market') loadMarket();
+        if (page === 'referral') loadAll();
     }
 
     function closeModal() {
@@ -1771,7 +1921,7 @@
     setLanguage(currentLang);
     loadAll();
 
-    // Автопроверка каждые 5 секунд
+    // Автопроверка каждые 5 секунд без сброса открытых окон
     setInterval(() => {
         loadAll(true);
     }, 5000);
